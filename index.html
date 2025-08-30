@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Radio</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff00;
+            color: rgb(136, 136, 136);
+            margin: 0;
+            padding: 40px 20px;
+            text-align: center;
+        }
+          
+         img {width: 100%;
+        border-radius: 10px;}
+
+        h1 {color: #b3ff00;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: 500;
+            
+        }
+
+        h3 {
+            
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-size: 18px;
+            font-weight:100;             
+        }
+         
+        cite { font-weight: 500;
+            font-size: 16px;
+               color: rgb(0, 255, 149);}
+
+        .player {
+            background: #003d55;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+
+        label {color: #00a3cc; }
+
+
+        p {font-size: 18px;
+            font-weight:light;
+           color: #00ccff;
+           font-weight: 900;
+        }
+
+        button {
+            background: #0077ff;
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 100;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+        }
+        button:active {
+            background: #b3ff00;
+            color: #002530;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 15px 0;
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .online {
+            color: #00a3cc;
+        }
+        .offline {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="player">
+        <h1>Welcome to first telegram mini-app radio station</h1>
+        <label><p><img src="junglist.gif"></p>We listen the very best music!</label>
+        <p>
+        <button id="play-pause">All systems go ! 😎</button>
+ 
+        <div>
+        
+            <input type="range" id="volume" min="0" max="1" step="0.001" value="0.7" />
+        
+         <blockquote>
+  <p>
+    Stay hungry. Stay foolish.	
+  </p>
+</blockquote>
+<p><cite>Стив Джобс</cite></p>
+
+        
+
+            <h3>If you would like to support us, please send your TON donations to this address.
+</h3>
+
+            
+        </div>
+
+        <div class="status" id="status">🟡 Checking ...</div>
+    </div>
+
+    <audio id="audio" src="https://streams.fluxfm.de/fusion-mp3-128/audio.aac"></audio>
+    
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram?.WebApp;
+        tg.ready();
+
+        const audio = document.getElementById('audio');
+        const playPauseBtn = document.getElementById('play-pause');
+        const volumeControl = document.getElementById('volume');
+        const status = document.getElementById('status');
+
+        let isPlaying = false;
+
+        // Громкость
+        audio.volume = volumeControl.value;
+        volumeControl.addEventListener('input', () => {
+            audio.volume = volumeControl.value;
+        });
+
+        // Статус
+        function updateStatus(online) {
+            if (online) {
+                status.innerHTML = '🟢 <span class="online">On Air</span>';
+            } else {
+                status.innerHTML = '🔴 <span class="offline">No Link</span>';
+            }
+        }
+
+        // Проверка статуса потока
+        function checkStream() {
+            fetch('https://stream.radioparadise.com/aac-192', { method: 'HEAD', mode: 'no-cors' })
+                .then(() => updateStatus(true))
+                .catch(() => updateStatus(false));
+        }
+        checkStream();
+        setInterval(checkStream, 30000);
+
+        // Play / Pause
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                playPauseBtn.textContent = '▶️ Play !';
+                isPlaying = false;
+                tg.HapticFeedback.impactOccurred('light');
+            } else {
+                audio.play().then(() => {
+                    playPauseBtn.textContent = '⏸️ Pause';
+                    isPlaying = true;
+                    updateStatus(true);
+                    tg.HapticFeedback.impactOccurred('medium');
+                }).catch(err => {
+                    alert('Ошибка воспроизведения. Нажмите кнопку ещё раз.');
+                    console.error(err);
+                });
+            }
+        });
+
+        // Закрываем веб-апп, но аудио продолжает играть
+        // (важно: Telegram позволяет это!)
+    </script>
+
+    
+</body>
+</html>
