@@ -150,7 +150,7 @@ To contact me with any questions, just write @slingerland and describe your ques
 
         // Проверка статуса потока
         function checkStream() {
-            fetch('https://stream.radioparadise.com/aac-192', { method: 'HEAD', mode: 'no-cors' })
+            fetch('https://radio.plaza.one/mp3', { method: 'HEAD', mode: 'no-cors' })
                 .then(() => updateStatus(true))
                 .catch(() => updateStatus(false));
         }
@@ -185,6 +185,7 @@ To contact me with any questions, just write @slingerland and describe your ques
 </body>
 
 </html>
+
 
 
 
